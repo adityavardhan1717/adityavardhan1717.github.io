@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aditya Vardhan — Backend Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css">
+<style>
+  :root{
+    --bg:#0A0C0F;
+    --panel:#12161B;
+    --panel-2:#181D24;
+    --line:#242B33;
+    --line-soft:#1A2027;
+    --text:#E9EDF1;
+    --muted:#7C8896;
+    --amber:#F0A93E;
+    --cyan:#4FD8C4;
+    --red:#E8555F;
+    --mono:'IBM Plex Mono', monospace;
+    --display:'Space Grotesk', sans-serif;
+    --sans:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
+  body{background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:radial-gradient(ellipse 75% 55% at 50% 0%, #000 35%, transparent 88%);
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:0 24px; position:relative; z-index:1;}
+
+  /* ---- status bar ---- */
+  .statusbar{border-bottom:1px solid var(--line); background:rgba(18,22,27,0.75); backdrop-filter:blur(10px); position:sticky; top:0; z-index:20;}
+  .statusbar .wrap{display:flex; align-items:center; justify-content:space-between; height:52px;}
+  .brand{font-family:var(--mono); font-weight:600; font-size:13px; letter-spacing:0.02em; display:flex; align-items:center; gap:9px;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); animation:pulse 2.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+  .navlinks{display:flex; gap:22px; font-family:var(--mono); font-size:11.5px; color:var(--muted);}
+  .navlinks a{text-decoration:none; transition:color .15s;}
+  .navlinks a:hover{color:var(--amber);}
+
+  /* ---- boot line ---- */
+  .boot{font-family:var(--mono); font-size:11px; color:var(--muted); padding:10px 0; border-bottom:1px solid var(--line-soft); overflow:hidden; white-space:nowrap;}
+  .boot span{color:var(--cyan);}
+
+  /* ---- hero ---- */
+  .hero{padding:64px 0 0; border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:var(--mono); font-size:11.5px; color:var(--amber); display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+  .eyebrow::before{content:''; width:16px; height:1px; background:var(--amber);}
+  h1{font-family:var(--display); font-size:clamp(34px,5.4vw,58px); font-weight:700; line-height:1.05; letter-spacing:-0.02em; max-width:840px;}
+  h1 .accent{color:var(--cyan);}
+  .sub{margin-top:20px; font-size:16.5px; color:var(--muted); max-width:580px; line-height:1.65;}
+  .cta-row{margin-top:32px; display:flex; gap:12px; flex-wrap:wrap;}
+  .btn{font-family:var(--mono); font-size:12.5px; padding:10px 18px; border-radius:6px; text-decoration:none; border:1px solid var(--line); transition:all .15s;}
+  .btn.primary{background:var(--cyan); color:#0A0C0F; font-weight:600; border-color:var(--cyan);}
+  .btn.primary:hover{background:#7ee5d6;}
+  .btn.ghost:hover{border-color:var(--amber); color:var(--amber);}
+
+  /* ---- live throughput chart ---- */
+  .throughput{margin-top:40px; background:var(--panel); border:1px solid var(--line); border-radius:10px 10px 0 0; border-bottom:none; padding:18px 22px 0;}
+  .throughput-head{display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:6px;}
+  .throughput-head .live{color:var(--cyan); display:flex; align-items:center; gap:6px;}
+  .throughput-val{font-family:var(--mono); font-size:26px; font-weight:600; color:var(--text);}
+  .throughput-val small{font-size:12px; color:var(--muted); font-weight:400;}
+  #sparkline{display:block; width:100%; height:80px;}
+
+  /* ---- section shell ---- */
+  section{padding:60px 0; border-bottom:1px solid var(--line);}
+  .section-head{display:flex; align-items:baseline; gap:14px; margin-bottom:34px;}
+  .section-head .idx{font-family:var(--mono); color:var(--muted); font-size:12.5px;}
+  .section-head h2{font-family:var(--display); font-size:21px; font-weight:600; letter-spacing:-0.01em;}
+  .section-head .rule{flex:1; height:1px; background:var(--line);}
+  .thesis-link{font-family:var(--mono); font-size:11px; color:var(--muted); text-decoration:none; border:1px solid var(--line); padding:6px 12px; border-radius:6px; white-space:nowrap; transition:all .15s;}
+  .thesis-link:hover{color:var(--cyan); border-color:var(--cyan);}
+  .section-note{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-top:0; margin-bottom:26px; max-width:560px; line-height:1.6;}
+
+  /* ---- SIGNATURE: trace waterfall ---- */
+  .trace-panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:26px 26px 22px;}
+  .trace-legend{display:flex; gap:20px; font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:20px; flex-wrap:wrap;}
+  .trace-legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px;}
+  .trace-row{display:grid; grid-template-columns:150px 1fr; align-items:center; gap:14px; padding:7px 0;}
+  .trace-name{font-family:var(--mono); font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .trace-track{position:relative; height:20px; background:var(--panel-2); border-radius:4px; overflow:hidden;}
+  .trace-bar{position:absolute; top:2px; bottom:2px; border-radius:3px; background:var(--cyan); opacity:0.85;}
+  .trace-bar.missing{background:repeating-linear-gradient(45deg, rgba(232,85,95,0.25), rgba(232,85,95,0.25) 4px, rgba(232,85,95,0.45) 4px, rgba(232,85,95,0.45) 8px); border:1px dashed var(--red); opacity:1;}
+  .trace-bar.warn{background:var(--amber); opacity:0.85;}
+  .trace-flag{position:absolute; right:-2px; top:-22px; font-family:var(--mono); font-size:10px; color:var(--red); white-space:nowrap;}
+  .trace-stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; margin-top:26px; padding-top:20px; border-top:1px solid var(--line);}
+  .trace-stat .num{font-family:var(--mono); font-size:22px; font-weight:700; color:var(--red);}
+  .trace-stat.ok .num{color:var(--cyan);}
+  .trace-stat .lbl{font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:3px;}
+
+  /* ---- compare chart ---- */
+  .compare-chart{margin-top:24px; padding-top:22px; border-top:1px solid var(--line);}
+  .compare-row{display:grid; grid-template-columns:130px 1fr; align-items:center; gap:14px; margin-bottom:12px;}
+  .compare-label{font-family:var(--mono); font-size:11.5px; color:var(--muted);}
+  .compare-track{height:26px; background:var(--panel-2); border-radius:5px; overflow:hidden; position:relative;}
+  .compare-fill{height:100%; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; font-family:var(--mono); font-size:11.5px; font-weight:600; color:#0A0C0F; border-radius:5px; transition:width 1.4s cubic-bezier(.16,1,.3,1);}
+  .compare-fill.anomaly{background:var(--red);}
+  .compare-fill.normal{background:var(--cyan);}
+  .compare-caption{font-family:var(--mono); font-size:10.5px; color:var(--muted); margin-top:4px;}
+
+  /* ---- methodology ---- */
+  .methodology{margin-top:20px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:22px 24px;}
+  .method-dataset{margin-bottom:20px; padding-bottom:18px; border-bottom:1px solid var(--line);}
+  .method-kicker{font-family:var(--mono); font-size:10.5px; color:var(--amber); text-transform:uppercase; letter-spacing:0.06em;}
+  .method-dataset p{font-size:13px; color:var(--muted); margin-top:8px; line-height:1.6; max-width:640px;}
+  .method-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;}
+  .method-card{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px;}
+  .method-card.primary{border-color:rgba(79,216,196,0.4);}
+  .method-tag{font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); background:var(--panel-2); border:1px solid var(--line); padding:2px 7px; border-radius:3px;}
+  .method-card.primary .method-tag{color:var(--cyan); border-color:rgba(79,216,196,0.3);}
+  .method-card h4{font-family:var(--display); font-size:13.5px; font-weight:600; margin-top:9px;}
+  .method-card p{font-size:11.5px; color:var(--muted); margin-top:6px; line-height:1.55;}
+
+  /* ---- featured thesis section ---- */
+  #trace{background:radial-gradient(ellipse 90% 60% at 50% 0%, rgba(79,216,196,0.05), transparent 70%);}
+  .featured-badge{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:10.5px; color:var(--amber); background:rgba(240,169,62,0.1); border:1px solid rgba(240,169,62,0.3); padding:5px 11px; border-radius:20px; margin-bottom:16px;}
+  .featured-badge::before{content:'★';}
+  .sell-line{font-family:var(--display); font-size:19px; font-weight:600; line-height:1.4; max-width:680px; margin-bottom:8px;}
+  .sell-line .hl{color:var(--cyan);}
+
+  /* ---- 3D layered stack ---- */
+  .stack3d-wrap{perspective:1000px; padding:20px 10px 50px; display:flex; justify-content:center;}
+  .stack3d{position:relative; width:220px; height:120px; transform-style:preserve-3d; transform:rotateX(55deg) rotateZ(-42deg); transition:transform .4s ease;}
+  .stack3d-wrap:hover .stack3d{transform:rotateX(52deg) rotateZ(-38deg) scale(1.05);}
+  .layer{position:absolute; inset:0; border-radius:8px; border:1.5px solid; box-shadow:0 14px 24px -8px rgba(0,0,0,0.65);}
+  .layer-label{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) rotateZ(42deg) rotateX(-55deg); font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:0.02em; white-space:nowrap; text-shadow:0 1px 3px rgba(0,0,0,0.8);}
+  .layer-1{background:rgba(79,216,196,0.16); border-color:rgba(79,216,196,0.55); transform:translateZ(0px);}
+  .layer-1 .layer-label{color:var(--cyan);}
+  .layer-2{background:rgba(79,216,196,0.12); border-color:rgba(79,216,196,0.4); transform:translateZ(38px);}
+  .layer-2 .layer-label{color:var(--cyan);}
+  .layer-3{background:rgba(240,169,62,0.14); border-color:rgba(240,169,62,0.5); transform:translateZ(76px);}
+  .layer-3 .layer-label{color:var(--amber);}
+  .layer-4{background:rgba(232,85,95,0.18); border-color:rgba(232,85,95,0.65); border-style:dashed; transform:translateZ(114px);}
+  .layer-4 .layer-label{color:var(--red);}
+  .stack-caption{text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:4px;}
+  .stack-caption b{color:var(--red);}
+
+  /* ---- pipeline / impact / citation ---- */
+  .pipeline{margin-top:20px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px 24px;}
+  .pipeline-flow{display:flex; align-items:center; gap:10px; margin-top:16px; flex-wrap:wrap;}
+  .pipe-step{background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px 16px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; min-width:120px; flex:1;}
+  .pipe-step i, .pipe-step .pipe-emoji{font-size:18px; color:var(--cyan);}
+  .pipe-step span{font-family:var(--display); font-size:12.5px; font-weight:600;}
+  .pipe-step small{font-family:var(--mono); font-size:10px; color:var(--muted);}
+  .pipe-step.flag{border-color:rgba(232,85,95,0.4);}
+  .pipe-step.flag .pipe-emoji{color:var(--red);}
+  .pipe-arrow{font-family:var(--mono); color:var(--muted); font-size:16px;}
+  .impact-callout{margin-top:16px; background:rgba(240,169,62,0.06); border:1px solid rgba(240,169,62,0.3); border-radius:10px; padding:20px 24px;}
+  .impact-callout p{font-size:13px; color:var(--text); margin-top:8px; line-height:1.65; max-width:640px;}
+  .citation-block{margin-top:16px; padding:16px 24px; border-left:2px solid var(--line);}
+  .citation-block p{font-size:11.5px; color:var(--muted); margin-top:6px; line-height:1.6; font-family:var(--mono);}
+
+  /* ---- project cards ---- */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(290px,1fr)); gap:18px;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px; transition:transform .18s, border-color .18s; display:flex; flex-direction:column; gap:13px;}
+  .card:hover{transform:translateY(-3px); border-color:var(--cyan);}
+  .card-top{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .status-badge{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:0.06em; padding:4px 8px; border-radius:4px; background:rgba(79,216,196,0.12); color:var(--cyan); border:1px solid rgba(79,216,196,0.3); white-space:nowrap;}
+  .status-badge.research{background:rgba(240,169,62,0.12); color:var(--amber); border-color:rgba(240,169,62,0.3);}
+  .card h3{font-family:var(--display); font-size:16px; font-weight:600;}
+  .card p{font-size:13px; color:var(--muted); line-height:1.6;}
+  .stack-tags{display:flex; flex-wrap:wrap; gap:6px;}
+  .tag{font-family:var(--mono); font-size:10px; color:var(--muted); background:var(--panel-2); border:1px solid var(--line); padding:3px 7px; border-radius:4px;}
+
+  /* mini bar-gauge metrics */
+  .gauge-row{margin-top:auto; padding-top:14px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:9px;}
+  .gauge{display:grid; grid-template-columns:1fr 42px; align-items:center; gap:10px;}
+  .gauge-label{font-family:var(--mono); font-size:10px; color:var(--muted);}
+  .gauge-track{grid-column:1/2; grid-row:2; height:5px; background:var(--panel-2); border-radius:3px; overflow:hidden; margin-top:2px;}
+  .gauge-fill{height:100%; border-radius:3px; background:var(--amber);}
+  .gauge-val{grid-row:1/3; font-family:var(--mono); font-size:12px; font-weight:600; color:var(--amber); text-align:right;}
+
+  /* ---- skills ---- */
+  .skill-groups{display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:20px;}
+  .skill-group{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px 20px;}
+  .skill-group h4{font-family:var(--mono); font-size:10.5px; color:var(--amber); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;}
+  .skill-group ul{list-style:none; display:flex; flex-direction:column; gap:10px;}
+  .skill-group li{font-size:13px; color:var(--text); display:flex; align-items:center; gap:10px;}
+  .skill-group li::before{content:''; width:5px; height:5px; background:var(--cyan); border-radius:50%; flex-shrink:0;}
+  .skill-group li.has-icon::before{display:none;}
+  .skill-group li i{font-size:16px; width:18px; text-align:center; flex-shrink:0;}
+  .icon-badge{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:6px; background:#EDEFF2; flex-shrink:0;}
+  .icon-badge i{font-size:13px; width:auto;}
+  .skill-group li i.devicon-mysql-plain, .skill-group li i.devicon-oracle-original, .skill-group li i.devicon-c-plain{color:var(--muted);}
+
+  /* ---- experience ---- */
+  .timeline{position:relative; padding-left:28px;}
+  .timeline::before{content:''; position:absolute; left:6px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .exp-item{position:relative; display:block; padding:0 0 30px; border-bottom:none;}
+  .exp-item:last-child{padding-bottom:0;}
+  .exp-item::before{content:''; position:absolute; left:-28px; top:4px; width:13px; height:13px; border-radius:50%; background:var(--panel); border:2px solid var(--cyan); z-index:1;}
+  .exp-item.research::before{border-color:var(--amber);}
+  .exp-time{font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.02em;}
+  .exp-role{font-family:var(--display); font-weight:600; font-size:16px; margin-top:4px;}
+  .exp-co{font-family:var(--mono); font-size:12px; color:var(--cyan); margin-top:2px;}
+  .exp-item.research .exp-co{color:var(--amber);}
+  .exp-desc{font-size:13px; color:var(--muted); margin-top:8px; line-height:1.6; max-width:600px;}
+  .exp-bullets{margin-top:10px; padding-left:18px; display:flex; flex-direction:column; gap:6px;}
+  .exp-bullets li{font-size:12.5px; color:var(--muted); line-height:1.55; position:relative;}
+  .exp-bullets li::marker{color:var(--cyan);}
+  .exp-item.research .exp-bullets li::marker{color:var(--amber);}
+  .exp-chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px;}
+  .exp-chip{font-family:var(--mono); font-size:10.5px; color:var(--text); background:var(--panel); border:1px solid var(--line); padding:4px 9px; border-radius:5px; display:flex; align-items:center; gap:5px;}
+  .exp-chip i{font-size:12px;}
+  .exp-chip .metric{color:var(--amber); font-weight:600;}
+
+  footer{padding:44px 0 60px;}
+  .footer-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
+  .footer-links{display:flex; gap:20px; font-family:var(--mono); font-size:12px;}
+  .footer-links a{text-decoration:none; color:var(--muted); transition:color .15s;}
+  .footer-links a:hover{color:var(--amber);}
+  .foot-note{font-family:var(--mono); font-size:10.5px; color:var(--muted);}
+
+  @media (max-width:600px){
+    .timeline{padding-left:22px;}
+    .exp-item::before{left:-22px;}
+    .navlinks{display:none;}
+    .trace-row{grid-template-columns:90px 1fr;}
+    .compare-row{grid-template-columns:90px 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="statusbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> aditya.vardhan // backend</div>
+    <nav class="navlinks">
+      <a href="#work">work</a>
+      <a href="#stack">stack</a>
+      <a href="#experience">experience</a>
+      <a href="#trace">thesis</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </div>
+</div>
+
+<div class="boot"><div class="wrap"><span id="bootline"></span></div></div>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SYSTEMS ONLINE · LIMERICK, IE</div>
+    <h1>I build backend systems that stay up when <span class="accent">10M+ events</span> hit them a day.</h1>
+    <p class="sub">Backend engineer specializing in Java / Spring Boot distributed systems. 3.5+ years shipping production fintech infrastructure — event pipelines, microservice migrations, and the monitoring that catches failures before customers do.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="mailto:thedeveloperaditya@gmail.com">get in touch</a>
+      <a class="btn ghost" href="https://linkedin.com/in/aditya-vardhan17" target="_blank">linkedin ↗</a>
+      <a class="btn ghost" href="https://github.com/aditya-vardhan17" target="_blank">github ↗</a>
+    </div>
+
+    <div class="throughput">
+      <div class="throughput-head">
+        <span class="live"><span class="dot" style="background:var(--cyan)"></span> kafka-backbone / events-per-sec</span>
+        <span id="clock">--:--:--</span>
+      </div>
+      <div class="throughput-val" id="livecount">115,740 <small>events processed today (sim.)</small></div>
+      <svg id="sparkline" viewBox="0 0 700 80" preserveAspectRatio="none"></svg>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head"><span class="idx">01</span><h2>Things I've shipped</h2><div class="rule"></div></div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-top"><h3>Kafka Event Backbone</h3><span class="status-badge">● in prod</span></div>
+        <p>Architected the event-streaming platform from scratch, replacing brittle point-to-point service calls with async messaging across the loan platform.</p>
+        <div class="stack-tags"><span class="tag">Kafka</span><span class="tag">Spring Boot</span><span class="tag">Java</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">latency reduction</span><span class="gauge-val">40%</span><div class="gauge-track"><div class="gauge-fill" style="width:40%"></div></div></div>
+          <div class="gauge"><span class="gauge-label">daily event volume</span><span class="gauge-val">10M+</span><div class="gauge-track"><div class="gauge-fill" style="width:95%; background:var(--cyan);"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><h3>Monolith → Microservices</h3><span class="status-badge">● in prod</span></div>
+        <p>Led the migration of the core loan module, resolving schema coupling that had blocked independent team releases for months.</p>
+        <div class="stack-tags"><span class="tag">Spring Boot</span><span class="tag">MySQL</span><span class="tag">HLD</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">release time cut</span><span class="gauge-val">40%</span><div class="gauge-track"><div class="gauge-fill" style="width:40%"></div></div></div>
+          <div class="gauge"><span class="gauge-label">team-wide impact</span><span class="gauge-val">yes</span><div class="gauge-track"><div class="gauge-fill" style="width:100%; background:var(--cyan);"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><h3>Top-Up Loan Platform</h3><span class="status-badge">● in prod</span></div>
+        <p>Pitched, built, and owned solo — architecture through production rollout. Now the company's #2 revenue-generating feature.</p>
+        <div class="stack-tags"><span class="tag">Java</span><span class="tag">Hibernate</span><span class="tag">DynamoDB</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">revenue rank</span><span class="gauge-val">#2</span><div class="gauge-track"><div class="gauge-fill" style="width:88%"></div></div></div>
+          <div class="gauge"><span class="gauge-label">ownership</span><span class="gauge-val">solo</span><div class="gauge-track"><div class="gauge-fill" style="width:100%; background:var(--cyan);"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><h3>Lead Management System</h3><span class="status-badge">● in prod</span></div>
+        <p>Built real-time lead visibility for the strategy team that didn't exist before. Used Python to redesign contact-frequency logic.</p>
+        <div class="stack-tags"><span class="tag">Python</span><span class="tag">Redis</span><span class="tag">AWS</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">spam complaints cut</span><span class="gauge-val">50%</span><div class="gauge-track"><div class="gauge-fill" style="width:50%"></div></div></div>
+          <div class="gauge"><span class="gauge-label">conversion lift</span><span class="gauge-val">↑</span><div class="gauge-track"><div class="gauge-fill" style="width:65%; background:var(--cyan);"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><h3>Trace Anomaly Detection</h3><span class="status-badge research">● research</span></div>
+        <p>MSc thesis: statistical anomaly detection across 6.59M production microservice traces using four detection methods.</p>
+        <div class="stack-tags"><span class="tag">Python</span><span class="tag">Jupyter</span><span class="tag">Statistics</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">traces analyzed</span><span class="gauge-val">6.59M</span><div class="gauge-track"><div class="gauge-fill" style="width:100%; background:var(--amber);"></div></div></div>
+          <div class="gauge"><span class="gauge-label">detection methods</span><span class="gauge-val">4</span><div class="gauge-track"><div class="gauge-fill" style="width:70%; background:var(--amber);"></div></div></div>
+        </div>
+        <a class="thesis-link" style="text-align:center; margin-top:4px;" href="https://github.com/aditya-vardhan17/microservice-trace-anomaly-detection" target="_blank" rel="noopener">view repo (coming soon) ↗</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><h3>Banking Transaction System</h3><span class="status-badge" style="background:rgba(124,136,150,0.12); color:var(--muted); border-color:rgba(124,136,150,0.3);">● side project</span></div>
+        <p>Self-directed reskilling build — a transaction-processing system exploring event-driven design patterns beyond the fintech stack used at work.</p>
+        <div class="stack-tags"><span class="tag">Kafka</span><span class="tag">Redis</span><span class="tag">Spring Boot</span><span class="tag">Docker</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">stack</span><span class="gauge-val">4</span><div class="gauge-track"><div class="gauge-fill" style="width:60%; background:var(--muted);"></div></div></div>
+          <div class="gauge"><span class="gauge-label">status</span><span class="gauge-val">WIP</span><div class="gauge-track"><div class="gauge-fill" style="width:45%; background:var(--muted);"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><h3>OpenLink Endur Optimization</h3><span class="status-badge">● in prod</span></div>
+        <p>Diagnosed a systemic Oracle backend issue on a trading platform, risking SLA compliance during high-volume windows.</p>
+        <div class="stack-tags"><span class="tag">Oracle</span><span class="tag">RxJava</span><span class="tag">JMeter</span></div>
+        <div class="gauge-row">
+          <div class="gauge"><span class="gauge-label">db performance</span><span class="gauge-val">+30%</span><div class="gauge-track"><div class="gauge-fill" style="width:30%"></div></div></div>
+          <div class="gauge"><span class="gauge-label">throughput gain</span><span class="gauge-val">+25%</span><div class="gauge-track"><div class="gauge-fill" style="width:25%; background:var(--cyan);"></div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="section-head"><span class="idx">02</span><h2>Stack</h2><div class="rule"></div></div>
+    <div class="skill-groups">
+      <div class="skill-group"><h4>Languages</h4><ul>
+        <li class="has-icon"><i class="devicon-java-plain colored"></i>Java</li>
+        <li class="has-icon"><i class="devicon-python-plain colored"></i>Python</li>
+        <li class="has-icon"><span class="icon-badge"><i class="devicon-azuresqldatabase-plain colored"></i></span>SQL</li>
+        <li class="has-icon"><span class="icon-badge"><i class="devicon-c-plain colored"></i></span>C</li>
+        <li>RxJava</li>
+      </ul></div>
+      <div class="skill-group"><h4>Backend & Messaging</h4><ul>
+        <li class="has-icon"><i class="devicon-spring-plain colored"></i>Spring Boot / Spring</li>
+        <li class="has-icon"><span class="icon-badge"><i class="devicon-hibernate-plain colored"></i></span>Hibernate</li>
+        <li class="has-icon"><i class="devicon-apachekafka-original colored"></i>Kafka</li>
+        <li>REST APIs</li>
+        <li>Microservices</li>
+        <li class="has-icon"><span class="icon-badge"><i class="devicon-junit-plain colored"></i></span>JUnit / Mockito</li>
+      </ul></div>
+      <div class="skill-group"><h4>Data</h4><ul>
+        <li class="has-icon"><i class="devicon-mysql-plain colored"></i>MySQL</li>
+        <li class="has-icon"><span class="icon-badge"><i class="devicon-oracle-original colored"></i></span>Oracle</li>
+        <li class="has-icon"><i class="devicon-redis-plain colored"></i>Redis</li>
+        <li class="has-icon"><i class="devicon-mongodb-plain colored"></i>MongoDB</li>
+        <li class="has-icon"><i class="devicon-amazonwebservices-plain colored"></i>DynamoDB</li>
+      </ul></div>
+      <div class="skill-group"><h4>Cloud & Practice</h4><ul>
+        <li class="has-icon"><i class="devicon-amazonwebservices-plain colored"></i>AWS Lambda / SAM CLI</li>
+        <li class="has-icon"><i class="devicon-docker-plain colored"></i>Docker</li>
+        <li>Sentry</li>
+        <li>HLD / LLD</li>
+        <li>Design Patterns</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="section-head"><span class="idx">03</span><h2>Experience</h2><div class="rule"></div></div>
+    <div class="timeline">
+      <div class="exp-item">
+        <div class="exp-time">08/2022 — 06/2024</div>
+        <div class="exp-role">Software Development Engineer II</div>
+        <div class="exp-co">Muthoot Fincorp One · Bengaluru</div>
+        <div class="exp-desc">Owned core loan infrastructure — microservice migration, Kafka event backbone, serverless cost optimization, and proactive monitoring via Sentry.</div>
+        <ul class="exp-bullets">
+          <li>Broke the loan module out of the monolith into an independently deployable microservice, resolving schema coupling that had blocked releases for months.</li>
+          <li>Designed and shipped the company's Kafka event-streaming backbone from scratch — now core infrastructure other teams build on.</li>
+          <li>Evaluated cost tradeoffs and moved select services to serverless (AWS Lambda + SAM CLI); introduced Sentry for proactive incident detection.</li>
+        </ul>
+        <div class="exp-chips">
+          <span class="exp-chip"><i class="devicon-apachekafka-original colored"></i>Kafka backbone <span class="metric">10M+/day</span></span>
+          <span class="exp-chip"><i class="devicon-spring-plain colored"></i>Monolith → microservices <span class="metric">-40% release time</span></span>
+          <span class="exp-chip"><i class="devicon-amazonwebservices-plain colored"></i>Serverless migration <span class="metric">-30% cost</span></span>
+          <span class="exp-chip"><i class="devicon-redis-plain colored"></i>Query + cache tuning <span class="metric">-30% latency</span></span>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-time">03/2021 — 07/2022</div>
+        <div class="exp-role">Project Engineer</div>
+        <div class="exp-co">Wipro · Hyderabad</div>
+        <div class="exp-desc">Diagnosed and fixed performance bottlenecks on a trading platform's Oracle backend; introduced async multithreading and systematic load testing.</div>
+        <ul class="exp-bullets">
+          <li>Diagnosed a systemic performance issue on OpenLink Endur's Oracle backend that risked SLA compliance during high-volume trading windows.</li>
+          <li>Introduced RxJava-based async multithreading ahead of scaling problems as transaction volume grew.</li>
+          <li>Built a systematic JMeter load-testing process from scratch, replacing guesswork with data.</li>
+        </ul>
+        <div class="exp-chips">
+          <span class="exp-chip"><span class="icon-badge"><i class="devicon-oracle-original colored"></i></span>OpenLink Endur tuning <span class="metric">+30% db perf</span></span>
+          <span class="exp-chip">RxJava async <span class="metric">+25% throughput</span></span>
+          <span class="exp-chip">JMeter load testing <span class="metric">-10% downtime</span></span>
+        </div>
+      </div>
+      <div class="exp-item research">
+        <div class="exp-time">10/2025 — 10/2026</div>
+        <div class="exp-role">MSc, Data Analytics</div>
+        <div class="exp-co">Technological University of the Shannon · Limerick</div>
+        <div class="exp-desc">Thesis: statistical anomaly detection in microservice production traces. Supervised by Eric McNamara.</div>
+        <ul class="exp-bullets">
+          <li>Analyzed 6.59M production microservice traces from the Meta Microservices Trace Dataset (USENIX ATC 2023).</li>
+          <li>Applied and compared four statistical detection methods to isolate anomalous service behaviour.</li>
+          <li>Found anomalous traces show a 99.7% missing-span rate vs. 23.9% in normal traces — a strong leading-indicator signal.</li>
+        </ul>
+        <div class="exp-chips">
+          <span class="exp-chip"><i class="devicon-python-plain colored"></i>6.59M traces analyzed</span>
+          <span class="exp-chip">4 statistical methods</span>
+          <span class="exp-chip">99.7% vs 23.9% missing-span signal</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="trace">
+    <div class="section-head"><span class="idx">04</span><h2>What my thesis actually found</h2><div class="rule"></div>
+      <a class="thesis-link" href="thesis.html">full breakdown ↗</a>
+    </div>
+    <div class="featured-badge">featured research</div>
+    <div class="sell-line">The same instinct that hunts for <span class="hl">hidden failures in distributed systems</span> — I bring it to every backend I build, not just the ones I study.</div>
+    <p class="section-note">A real request trace, simplified. Span 4 never reports back — that's the pattern my thesis measured across 6.59M production traces: anomalous traces are missing a span 99.7% of the time, vs. 23.9% for normal ones.</p>
+
+    <div class="stack3d-wrap">
+      <div class="stack3d">
+        <div class="layer layer-1"><span class="layer-label">api-gateway</span></div>
+        <div class="layer layer-2"><span class="layer-label">loan-service</span></div>
+        <div class="layer layer-3"><span class="layer-label">payments-svc (slow)</span></div>
+        <div class="layer layer-4"><span class="layer-label">ledger-svc — missing</span></div>
+      </div>
+    </div>
+    <p class="stack-caption">Request depth through 4 services — <b>layer 4 never returns.</b> That gap is the anomaly signal.</p>
+
+    <div class="trace-panel">
+      <div class="trace-legend">
+        <span><span class="sw" style="background:var(--cyan)"></span>completed span</span>
+        <span><span class="sw" style="background:var(--amber)"></span>slow span</span>
+        <span><span class="sw" style="background:var(--red); opacity:0.6"></span>missing span (anomaly signal)</span>
+      </div>
+      <div class="trace-row"><div class="trace-name">api-gateway</div><div class="trace-track"><div class="trace-bar" style="left:0%; width:96%;"></div></div></div>
+      <div class="trace-row"><div class="trace-name">loan-service</div><div class="trace-track"><div class="trace-bar" style="left:4%; width:70%;"></div></div></div>
+      <div class="trace-row"><div class="trace-name">auth-service</div><div class="trace-track"><div class="trace-bar" style="left:6%; width:18%;"></div></div></div>
+      <div class="trace-row"><div class="trace-name">payments-svc</div><div class="trace-track"><div class="trace-bar warn" style="left:26%; width:40%;"></div></div></div>
+      <div class="trace-row"><div class="trace-name">ledger-svc <span style="color:var(--red)">*</span></div><div class="trace-track"><div class="trace-bar missing" style="left:68%; width:26%;"><span class="trace-flag">span never returns →</span></div></div></div>
+      <div class="compare-chart">
+        <div class="compare-row">
+          <div class="compare-label">Anomalous traces</div>
+          <div class="compare-track"><div class="compare-fill anomaly" id="fillAnom" style="width:0%">99.7%</div></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">Normal traces</div>
+          <div class="compare-track"><div class="compare-fill normal" id="fillNorm" style="width:0%">23.9%</div></div>
+        </div>
+        <div class="compare-caption">% of traces missing at least one expected span</div>
+      </div>
+
+      <div class="trace-stats">
+        <div class="trace-stat"><div class="num">99.7%</div><div class="lbl">missing-span rate, anomalous traces</div></div>
+        <div class="trace-stat ok"><div class="num">23.9%</div><div class="lbl">missing-span rate, normal traces</div></div>
+        <div class="trace-stat ok"><div class="num">6.59M</div><div class="lbl">production traces analyzed</div></div>
+        <div class="trace-stat ok"><div class="num">4</div><div class="lbl">statistical detection methods</div></div>
+      </div>
+    </div>
+
+    <div class="methodology">
+      <div class="method-dataset">
+        <span class="method-kicker">Dataset</span>
+        <p>Meta Microservices Trace Dataset (Huye, Shkuro & Sambasivan, USENIX ATC 2023) — ~6.59M production traces from Meta's internal microservice fleet, spanning thousands of services.</p>
+      </div>
+      <div class="method-grid">
+        <div class="method-card primary">
+          <span class="method-tag">primary</span>
+          <h4>Percentile Thresholds</h4>
+          <p>Flags traces whose latency or span-count falls outside a defined percentile band relative to the service's normal distribution — the main detection method used.</p>
+        </div>
+        <div class="method-card">
+          <span class="method-tag">alt</span>
+          <h4>Z-Score</h4>
+          <p>Standardizes span duration against the mean and standard deviation of a service's typical behaviour to catch statistical outliers.</p>
+        </div>
+        <div class="method-card">
+          <span class="method-tag">alt</span>
+          <h4>IQR (Interquartile Range)</h4>
+          <p>Uses the spread between the 25th and 75th percentile to flag traces falling well outside the normal operating range — robust to extreme outliers.</p>
+        </div>
+        <div class="method-card">
+          <span class="method-tag">alt</span>
+          <h4>MAD (Median Absolute Deviation)</h4>
+          <p>A more robust alternative to standard deviation-based methods, less sensitive to the extreme skew common in production latency data.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <span class="method-kicker">Detection pipeline</span>
+      <div class="pipeline-flow">
+        <div class="pipe-step"><i class="devicon-python-plain colored"></i><span>Ingest traces</span><small>6.59M raw spans</small></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step"><span class="pipe-emoji">⚙</span><span>Extract features</span><small>span count, latency, gaps</small></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step"><span class="pipe-emoji">Σ</span><span>Apply 4 methods</span><small>percentile · z-score · IQR · MAD</small></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step flag"><span class="pipe-emoji">⚑</span><span>Flag anomaly</span><small>99.7% missing-span rate</small></div>
+      </div>
+    </div>
+
+    <div class="impact-callout">
+      <span class="method-kicker">Why it matters</span>
+      <p>Most observability tools react after a service has already failed. This finding flips that — a missing span is a leading indicator, not a symptom, so a monitoring system could flag a likely failure while the request is still in flight, before it reaches the user as an error.</p>
+    </div>
+
+    <div class="citation-block">
+      <span class="method-kicker">Source</span>
+      <p>Huye, D., Shkuro, Y. & Sambasivan, R. "Lifting the Veil on Meta's Microservice Architecture." <i>USENIX ATC</i>, 2023 · Full pipeline built as a 35-cell Jupyter notebook covering data cleaning, EDA, and statistical modelling.</p>
+    </div>
+
+    <div class="impact-callout" style="margin-top:16px; background:rgba(79,216,196,0.06); border-color:rgba(79,216,196,0.3);">
+      <span class="method-kicker" style="color:var(--cyan);">Bottom line for hiring managers</span>
+      <p>I don't just write backend code — I study why distributed systems fail, at production scale, with statistical rigor. That combination is rare, and it's exactly what keeps a platform reliable as it grows.</p>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="footer-grid">
+      <div class="foot-note">// aditya-vardhan17 · limerick, ireland</div>
+      <div class="footer-links">
+        <a href="mailto:thedeveloperaditya@gmail.com">email</a>
+        <a href="https://linkedin.com/in/aditya-vardhan17" target="_blank">linkedin</a>
+        <a href="https://github.com/aditya-vardhan17" target="_blank">github</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // boot line typewriter
+  const bootText = "> connecting to kafka-backbone... OK  |  loading traces (6.59M)... OK  |  status: all systems nominal";
+  const bootEl = document.getElementById('bootline');
+  let bi = 0;
+  function typeBoot(){
+    if(bi <= bootText.length){
+      bootEl.innerHTML = bootText.slice(0,bi).replace('OK','<span>OK</span>');
+      bi++;
+      setTimeout(typeBoot, 12);
+    }
+  }
+  typeBoot();
+
+  // live clock
+  function tickClock(){
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IE',{hour12:false});
+  }
+  tickClock(); setInterval(tickClock,1000);
+
+  // simulated live counter
+  let count = 115740;
+  const countEl = document.getElementById('livecount');
+  setInterval(()=>{
+    count += Math.floor(Math.random()*40)+5;
+    countEl.innerHTML = count.toLocaleString() + ' <small>events processed today (sim.)</small>';
+  }, 1400);
+
+  // animate compare bars when scrolled into view
+  const fillAnom = document.getElementById('fillAnom');
+  const fillNorm = document.getElementById('fillNorm');
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        fillAnom.style.width = '99.7%';
+        fillNorm.style.width = '23.9%';
+        obs.disconnect();
+      }
+    });
+  }, {threshold:0.4});
+  if(fillAnom) obs.observe(fillAnom);
+
+  // sparkline chart
+  const svg = document.getElementById('sparkline');
+  const W = 700, H = 80, POINTS = 60;
+  let data = Array.from({length:POINTS}, ()=> 30 + Math.random()*30);
+  const ns = 'http://www.w3.org/2000/svg';
+  const path = document.createElementNS(ns,'path');
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke','#4FD8C4');
+  path.setAttribute('stroke-width','2');
+  const area = document.createElementNS(ns,'path');
+  area.setAttribute('fill','url(#grad)');
+  area.setAttribute('stroke','none');
+  const defs = document.createElementNS(ns,'defs');
+  defs.innerHTML = '<linearGradient id="grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4FD8C4" stop-opacity="0.35"/><stop offset="100%" stop-color="#4FD8C4" stop-opacity="0"/></linearGradient>';
+  svg.appendChild(defs); svg.appendChild(area); svg.appendChild(path);
+
+  function render(){
+    const step = W/(POINTS-1);
+    let d = '', a = `M0,${H} `;
+    data.forEach((v,i)=>{
+      const x = i*step, y = H - v;
+      d += (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+      a += 'L' + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    });
+    a += `L${W},${H} Z`;
+    path.setAttribute('d', d);
+    area.setAttribute('d', a);
+  }
+  render();
+  setInterval(()=>{
+    data.shift();
+    let last = data[data.length-1];
+    let next = Math.max(10, Math.min(75, last + (Math.random()*20-10)));
+    data.push(next);
+    render();
+  }, 900);
+</script>
+
+</body>
+</html>
