@@ -193,6 +193,7 @@
   .icon-badge{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:6px; background:#EDEFF2; flex-shrink:0;}
   .icon-badge i{font-size:13px; width:auto;}
   .skill-group li i.devicon-mysql-plain, .skill-group li i.devicon-oracle-original, .skill-group li i.devicon-c-plain{color:var(--muted);}
+  .kafka-icon.colored{color:var(--cyan) !important;}
 
   /* ---- experience ---- */
   .timeline{position:relative; padding-left:28px;}
@@ -356,17 +357,17 @@
       <div class="skill-group"><h4>Languages</h4><ul>
         <li class="has-icon"><i class="devicon-java-plain colored"></i>Java</li>
         <li class="has-icon"><i class="devicon-python-plain colored"></i>Python</li>
-        <li class="has-icon"><span class="icon-badge"><i class="devicon-azuresqldatabase-plain colored"></i></span>SQL</li>
+        <li>SQL</li>
         <li class="has-icon"><span class="icon-badge"><i class="devicon-c-plain colored"></i></span>C</li>
         <li>RxJava</li>
       </ul></div>
       <div class="skill-group"><h4>Backend & Messaging</h4><ul>
         <li class="has-icon"><i class="devicon-spring-plain colored"></i>Spring Boot / Spring</li>
-        <li class="has-icon"><span class="icon-badge"><i class="devicon-hibernate-plain colored"></i></span>Hibernate</li>
-        <li class="has-icon"><i class="devicon-apachekafka-original colored"></i>Kafka</li>
+        <li>Hibernate</li>
+        <li class="has-icon"><i class="devicon-apachekafka-original colored kafka-icon"></i>Kafka</li>
         <li>REST APIs</li>
         <li>Microservices</li>
-        <li class="has-icon"><span class="icon-badge"><i class="devicon-junit-plain colored"></i></span>JUnit / Mockito</li>
+        <li>JUnit / Mockito</li>
       </ul></div>
       <div class="skill-group"><h4>Data</h4><ul>
         <li class="has-icon"><i class="devicon-mysql-plain colored"></i>MySQL</li>
@@ -399,7 +400,7 @@
           <li>Evaluated cost tradeoffs and moved select services to serverless (AWS Lambda + SAM CLI); introduced Sentry for proactive incident detection.</li>
         </ul>
         <div class="exp-chips">
-          <span class="exp-chip"><i class="devicon-apachekafka-original colored"></i>Kafka backbone <span class="metric">10M+/day</span></span>
+          <span class="exp-chip"><i class="devicon-apachekafka-original colored kafka-icon"></i>Kafka backbone <span class="metric">10M+/day</span></span>
           <span class="exp-chip"><i class="devicon-spring-plain colored"></i>Monolith → microservices <span class="metric">-40% release time</span></span>
           <span class="exp-chip"><i class="devicon-amazonwebservices-plain colored"></i>Serverless migration <span class="metric">-30% cost</span></span>
           <span class="exp-chip"><i class="devicon-redis-plain colored"></i>Query + cache tuning <span class="metric">-30% latency</span></span>
